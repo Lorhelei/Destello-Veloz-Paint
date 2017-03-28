@@ -7,11 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace Lineas_de_Bresenhaimsd
 {
     public partial class Form1 : Form
     {
+
+        private int actual = 0;
+        List<int[]> listaPosiciones = new List<int[]>(2);
+         
         public Form1()
         {
             InitializeComponent();
@@ -19,21 +24,21 @@ namespace Lineas_de_Bresenhaimsd
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            DibujarLinea();  
+            
         }
 
-        private void DibujarLinea()
+        private void DibujarLinea(int xfinal, int yfinal, int inicialx, int inicialy, Color color, int grosor = 1)
         {
             int xi, yi, xf, yf;
             xi = yi = 0;
-            xf = 0;
-            yf = 0;
+            xf = xfinal;
+            yf = yfinal;
             int s1, s2, intercambio, x, y;
             float ei, ax, ay, temp;
 
 
             Graphics graphicsObj = CreateGraphics();
-            Pen pluma = new Pen(Color.Red, 1);
+            Pen pluma = new Pen(color, grosor);
             x = xi;
             y = yi;
             ax = Math.Abs(xf - xi);
@@ -58,8 +63,8 @@ namespace Lineas_de_Bresenhaimsd
             for (int m = 1; m < ax; m++)
             {
                 int puntox, puntoy;
-                puntox = 100 + x;
-                puntoy = 150 - y;
+                puntox = inicialx + x;
+                puntoy = inicialy - y;
                 graphicsObj.DrawRectangle(pluma, puntox, puntoy, 1, 1);
                 if (ei >= 0)
                 {
@@ -105,6 +110,43 @@ namespace Lineas_de_Bresenhaimsd
                 return resultado;
 
             return resultado;
+        }
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            int[] x = new int[2];
+            x[0] = e.X;
+            x[1] = e.Y;
+
+            listaPosiciones.Add(x);
+
+
+            try
+            {
+                int x1 = listaPosiciones[actual][0] - listaPosiciones[actual - 1][0];
+                int y1 = listaPosiciones[actual - 1][1] - listaPosiciones[actual][1];
+                int x2 = listaPosiciones[actual - 1][0];
+                int y2 = listaPosiciones[actual - 1][1];
+                DibujarLinea(x1, y1, x2, y2, Color.Crimson);
+            }
+            catch (Exception)
+            {
+
+            }
+
+            actual++;
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            string coordenadas;
+            coordenadas = e.Location.ToString();
+            toolStripStatusLabel1.Text = coordenadas;
+        }
+
+        private void DibujarSombra()
+        {
+            
         }
     }
 }
